@@ -1,0 +1,118 @@
+import {
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	UsePipes,
+	ValidationPipe
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { AuthDto } from './dto/auth.dto';
+
+/**
+ * AuthController
+ * 
+ * Контроллер, отвечающий за обработку HTTP-запросов, связанных с аутентификацией.
+ * Включает маршруты для входа пользователя и другие операции аутентификации.
+ */
+@Controller('auth') // Указывает, что маршруты этого контроллера будут начинаться с `/auth`.
+export class AuthController {
+	constructor(private readonly authService: AuthService) {}
+
+	/**
+	 * POST /auth/login
+	 * 
+	 * Обрабатывает запрос на вход пользователя. Принимает учетные данные из тела запроса,
+	 * передает их в AuthService и возвращает результат.
+	 * 
+	 * @param dto Объект AuthDto, содержащий данные для входа (например, email и пароль).
+	 *            Передается из тела HTTP-запроса.
+	 * @returns Результат выполнения метода login из AuthService.
+	 * 
+	 * Декораторы:
+	 * - @UsePipes(new ValidationPipe()): Применяет встроенный ValidationPipe для автоматической
+	 *   проверки данных, отправленных в теле запроса. Если данные не соответствуют ожидаемой схеме,
+	 *   будет выброшена ошибка.
+	 * - @HttpCode(200): Устанавливает HTTP-статус код ответа на 200 OK (по умолчанию POST-запросы
+	 *   возвращают 201 Created).
+	 * - @Post('login'): Указывает, что этот метод будет обрабатывать POST-запросы по маршруту `/auth/login`.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Post('login')
+	async login(@Body() dto: AuthDto) {
+		// Передаем данные пользователя (dto) в AuthService для обработки.
+		return this.authService.login(dto);
+	}
+}
+
+
+
+Вот код с добавленными подробными комментариями и документацией:
+
+typescript
+Копіювати
+Редагувати
+import {
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	UsePipes,
+	ValidationPipe
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { AuthDto } from './dto/auth.dto';
+
+/**
+ * AuthController
+ * 
+ * Контроллер, отвечающий за обработку HTTP-запросов, связанных с аутентификацией.
+ * Включает маршруты для входа пользователя и другие операции аутентификации.
+ */
+@Controller('auth') // Указывает, что маршруты этого контроллера будут начинаться с `/auth`.
+export class AuthController {
+	constructor(private readonly authService: AuthService) {}
+
+	/**
+	 * POST /auth/login
+	 * 
+	 * Обрабатывает запрос на вход пользователя. Принимает учетные данные из тела запроса,
+	 * передает их в AuthService и возвращает результат.
+	 * 
+	 * @param dto Объект AuthDto, содержащий данные для входа (например, email и пароль).
+	 *            Передается из тела HTTP-запроса.
+	 * @returns Результат выполнения метода login из AuthService.
+	 * 
+	 * Декораторы:
+	 * - @UsePipes(new ValidationPipe()): Применяет встроенный ValidationPipe для автоматической
+	 *   проверки данных, отправленных в теле запроса. Если данные не соответствуют ожидаемой схеме,
+	 *   будет выброшена ошибка.
+	 * - @HttpCode(200): Устанавливает HTTP-статус код ответа на 200 OK (по умолчанию POST-запросы
+	 *   возвращают 201 Created).
+	 * - @Post('login'): Указывает, что этот метод будет обрабатывать POST-запросы по маршруту `/auth/login`.
+	 */
+	@UsePipes(new ValidationPipe())
+	@HttpCode(200)
+	@Post('login')
+	async login(@Body() dto: AuthDto) {
+		// Передаем данные пользователя (dto) в AuthService для обработки.
+		return this.authService.login(dto);
+	}
+}
+Подробности о добавленных комментариях:
+Классовая документация:
+
+Объясняет назначение AuthController и подчеркивает, что он обрабатывает HTTP-запросы, связанные с аутентификацией.
+Документация метода login:
+
+Подробно описывает маршрут /auth/login и его функциональность.
+Рассказывает, какие декораторы используются:
+@UsePipes(new ValidationPipe()) — проверяет входящие данные на соответствие схеме (DTO).
+@HttpCode(200) — изменяет стандартный HTTP-код ответа для POST-запросов.
+@Post('login') — задает конечную точку API.
+Описывает, как данные AuthDto передаются в метод.
+Встроенные комментарии:
+
+Поясняют работу ValidationPipe и зачем он применяется.
+Объясняют передачу DTO в AuthService.

@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid()) // id- unic identificator of user string - string @id this is the primary key of the table 
+  createdAt  DateTime @default(now()) @map("created_at") // DateTime - data, time , @default(now) - id will be default current 
+  updateAt   DateTime @updatedAt @map("updated_at")
+  
+  email     String  @unique
+  name      String?
+  password  String
+
+  workInterval  Int?  @default(50) @map("work_interval")
+  breakInterval Int?  @default(18) @map("break_interval")
+  intervalCount Int?  @default(7)  @map("interval_count")
+
+  tasks Task[]
+  timeBlocks TimeBlock[]
+  pomodoroSessions PomodoroSession[]
+
+  @@map("user")
+}
+
+
+model Task{
+  id         String   @id @default(cuid()) // id- unic identificator of user string - string @id this is the primary key of the table 
+  createdAt  DateTime @default(now()) @map("created_at") // DateTime - data, time , @default(now) - id will be default current 
+  updateAt   DateTime @updatedAt @map("updated_at")
+  
+  name        String
+  priority    Priority?
+  isCompleted Boolean?  @default(false) @map("is_completed")
+
+  user        User  @relation(fields: [userId], references: [id])
+  userId      String @map("user_id")
+
+  @@map("task")
+}
+
+model TimeBlock{
+  id         String   @id @default(cuid()) // Unique identifier for the TimeBlock
+  createdAt  DateTime @default(now()) @map("created_at") // Hour of TimeBlock creation
+  updateAt   DateTime @updatedAt @map("updated_at") // Time of the last update TimeBlock
+
+  name     String    // TimeBlock name
+  color    String    // TimeBlock color (possible for visual indication)
+  duration Int         // TimeBlock duration in minutes or seconds
+  order    Int    @default(1)  // TimeBlock order (default is 1)
+
+  user        User  @relation(fields: [userId], references: [id])   // Communication with the user
+  userId      String @map("user_id") // Foreign key for the user
+
+  @@map("time_block") // Name of the table in the database
+}
+
+model PomodoroSession{
+  id         String   @id @default(cuid()) // id- unic identificator of user string - string @id this is the primary key of the table 
+  createdAt  DateTime @default(now()) @map("created_at") // DateTime - data, time , @default(now) - id will be default current 
+  updateAt   DateTime @updatedAt @map("updated_at")
+
+ isCompleted Boolean? @default(false) @map("is_completed") // Field for displaying the session termination status.
+
+  user        User  @relation(fields: [userId], references: [id]) //field is a foreign key that connects the PomodoroSession model with the User model.
+  userId      String @map("user_id") 
+  
+  rounds PomodoroRound[] // This is a one-to-many relationship with the PomodoroRound model, where a session can contain several rounds.
+  @@map("pomodoro_session")
+}
+
+model PomodoroRound{
+  id         String   @id @default(cuid()) // id- unic identificator of user string - string @id this is the primary key of the table 
+  createdAt  DateTime @default(now()) @map("created_at") // DateTime - data, time , @default(now) - id will be default current 
+  updateAt   DateTime @updatedAt @map("updated_at")
+
+ totalSeconds  Int  @map("total_seconds")
+ isCompleted   Boolean? @default(false) @map("is_completed")
+
+  pomodoroSession   PomodoroSession  @relation(fields: [pomodoroSessionId], references: [id],  onDelete: Cascade)
+  pomodoroSessionId String           @map("pomodoro_session_id")
+
+  @@map("pomodoro_round")
+}
+enum Priority {
+  low
+  medium
+  high
+}
+

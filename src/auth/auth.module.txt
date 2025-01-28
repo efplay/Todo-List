@@ -1,0 +1,77 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { getJwtConfig } from 'src/config/jwt.config';
+import { UserModule } from 'src/user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt.strategy';
+
+/**
+ * AuthModule
+ * 
+ * Этот модуль отвечает за функциональность аутентификации в приложении.
+ * Включает в себя все необходимые компоненты для обработки входа пользователя,
+ * проверки токенов, а также их генерации.
+ */
+@Module({
+  imports: [
+    /**
+     * UserModule: модуль пользователей, который предоставляет функциональность,
+     * связанную с работой с данными пользователей.
+     */
+    UserModule,
+
+    /**
+     * ConfigModule: модуль для управления конфигурацией приложения.
+     * Используется для работы с переменными окружения и их интеграции.
+     */
+    ConfigModule,
+
+    /**
+     * JwtModule: модуль для работы с JWT (JSON Web Token).
+     * Здесь используется асинхронная регистрация через `registerAsync`, чтобы настроить JWT,
+     * используя конфигурацию, предоставляемую `ConfigService` и `getJwtConfig`.
+     */
+    JwtModule.registerAsync({
+      imports: [ConfigModule], // Импортируем ConfigModule для доступа к переменным окружения.
+      inject: [ConfigService], // Внедряем ConfigService для получения конфигурации JWT.
+      useFactory: getJwtConfig // Используем функцию-фабрику для предоставления настроек JWT.
+    })
+  ],
+
+  /**
+   * Контроллеры, обслуживаемые этим модулем.
+   * AuthController обрабатывает HTTP-запросы, связанные с аутентификацией.
+   */
+  controllers: [AuthController],
+
+  /**
+   * Провайдеры, зарегистрированные в этом модуле.
+   * - AuthService: содержит бизнес-логику, связанную с аутентификацией.
+   * - JwtStrategy: стратегия для проверки JWT в рамках Guard-а (используется для защиты маршрутов).
+   */
+  providers: [AuthService, JwtStrategy]
+})
+export class AuthModule {}
+
+
+Подробное объяснение добавленных комментариев:
+Общая документация модуля:
+
+Указывает, что AuthModule — это модуль, отвечающий за аутентификацию.
+Подчеркивает его ключевые функции: вход пользователя, генерация токенов и их проверка.
+Документация для imports:
+
+UserModule: Поясняет, что модуль пользователей используется для управления данными пользователей.
+ConfigModule: Описывает, что модуль предназначен для работы с переменными окружения.
+JwtModule: Подробно объясняет, как выполняется асинхронная регистрация JWT, что делает useFactory и зачем нужен ConfigService.
+Документация для controllers:
+
+Объясняет, что AuthController обрабатывает HTTP-запросы, связанные с аутентификацией.
+Документация для providers:
+
+Подробно описывает, что делает AuthService и как используется JwtStrategy.
+Встроенные комментарии:
+
+Добавлены к каждой ключевой секции, чтобы подробно объяснить, почему эти модули, контроллеры и провайдеры важны и как они взаимодействуют.
