@@ -46,4 +46,17 @@ export class AuthService {
 		// At this point method simply returns object AuthDto
 		return dto
 	}
+
+
+	private issueTokens(userId:string){
+		const data = {id:userId}
+
+		const accessToken =  this.jwt.sign(data, {
+			expiresIn: '24h'
+		})
+
+		const refreshToken = this.jwt.sign(data, {
+			expiresIn = '3h'
+		})
+	}
 }
